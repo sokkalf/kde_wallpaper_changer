@@ -1,12 +1,10 @@
 #!/usr/bin/env ruby
 
-require 'pp'
-
 module SetWallpaper
   def self.wallpaper_map
-    {'HDMI-A-0' => '~/Nextcloud/wallpapers/cat-rain-dream-cyberpunk-city-4k-02-3840x2400.jpg',
-     'DisplayPort-4' => '~/Nextcloud/wallpapers/glowing-with-neon-ye-3840x2400.jpg',
-     'eDP' => '~/Nextcloud/wallpapers/way-to-retro-city-4k-r6-2560x1600.jpg'}
+    {'PHL 328P6V' => '~/Nextcloud/wallpapers/cat-rain-dream-cyberpunk-city-4k-02-3840x2400.jpg',
+     'PHL 328P6VU' => '~/Nextcloud/wallpapers/glowing-with-neon-ye-3840x2400.jpg',
+     'Laptop monitor' => '~/Nextcloud/wallpapers/way-to-retro-city-4k-r6-2560x1600.jpg'}
   end
 
   def self.monitor_map
@@ -33,11 +31,26 @@ module SetWallpaper
       }
     JS
     out = %x{qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "#{javascript}"}
-    puts out
+  end
+
+  def self.output_to_display
+    wd = File.dirname(File.expand_path(__FILE__))
+    out = %x{#{wd}/get_monitor_names.sh}
+    out.split("\n").map{|x| output, type, *display_name = x.split(" ") ; {display_name.join(" ") => output}}.inject(:merge)
+  end
+
+  def self.set_wallpapers
+    monitor_display_map = self.output_to_display
+    wallpapers_to_set = self.wallpaper_map.filter_map do |monitor, wallpaper|
+      display = monitor_display_map[monitor]
+      kde_screen = monitor_map.invert[display]
+      {monitor: monitor, wallpaper: wallpaper, display: display, screen: kde_screen} if display && kde_screen
+    end
+
+    wallpapers_to_set.each do |wp|
+      SetWallpaper.set_wallpaper(wp[:screen], wp[:wallpaper])
+    end
   end
 end
-
-SetWallpaper.monitor_map.each do |kde_screen, monitor|
-  SetWallpaper.set_wallpaper(kde_screen, SetWallpaper.wallpaper_map[monitor])
-end
+SetWallpaper.set_wallpapers
 
