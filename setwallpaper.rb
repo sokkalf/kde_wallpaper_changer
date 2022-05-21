@@ -1,10 +1,12 @@
 #!/usr/bin/env ruby
+require 'yaml'
 
 module SetWallpaper
   def self.wallpaper_map
-    {'PHL 328P6V' => '~/Nextcloud/wallpapers/cat-rain-dream-cyberpunk-city-4k-02-3840x2400.jpg',
-     'PHL 328P6VU' => '~/Nextcloud/wallpapers/glowing-with-neon-ye-3840x2400.jpg',
-     'Laptop monitor' => '~/Nextcloud/wallpapers/way-to-retro-city-4k-r6-2560x1600.jpg'}
+    #{'PHL 328P6V' => '~/Nextcloud/wallpapers/cat-rain-dream-cyberpunk-city-4k-02-3840x2400.jpg',
+    # 'PHL 328P6VU' => '~/Nextcloud/wallpapers/glowing-with-neon-ye-3840x2400.jpg',
+    # 'Laptop monitor' => '~/Nextcloud/wallpapers/way-to-retro-city-4k-r6-2560x1600.jpg'}
+    YAML.load_file('wallpapers.yml')
   end
 
   def self.monitor_map
