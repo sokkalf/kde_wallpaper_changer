@@ -4,8 +4,9 @@ while read -r output hex conn; do
     echo "$output $conn $(xxd -r -p <<< "$hex")"
 done < <(xrandr --prop | awk '
     !/^[ \t]/ {
-        if (output && hex && !(output ~ /eDP/)) print output, hex, conn
-        if (output && output ~ /eDP/) print output, "4c6170746f70206d6f6e69746f72", "eDP"
+        if (output && hex && !(output ~ /eDP/) && conn != "Panel") print output, hex, conn
+        if (output && output ~ /eDP/ && conn != "Panel") print output, "4c6170746f70206d6f6e69746f72", "eDP"
+        if (conn && conn == "Panel") print output, "4c6170746f70206d6f6e69746f72", "Panel"
         output=$1
         hex=""
     }
@@ -19,8 +20,9 @@ done < <(xrandr --prop | awk '
     h {sub(/[ \t]+/, ""); hex = hex $0}
     /EDID.*:/ {h=1}
     END {
-      if (output && hex && !(output ~ /eDP/)) print output, hex, conn
-      if (output && output ~ /eDP/) print output, "4c6170746f70206d6f6e69746f72", "eDP"
+      if (output && hex && !(output ~ /eDP/) && conn != "Panel") print output, hex, conn
+      if (output && output ~ /eDP/ && conn != "Panel") print output, "4c6170746f70206d6f6e69746f72", "eDP"
+      if (conn && conn == "Panel") print output, "4c6170746f70206d6f6e69746f72", "Panel"
     }
     ' | sort
 )
