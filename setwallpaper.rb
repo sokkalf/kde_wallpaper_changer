@@ -11,7 +11,7 @@ module SetWallpaper
 
   def self.monitor_map
     # get list of screens as enumerated by KDE (negative numbers are disabled)
-    kde_screens = %x{qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();for(i=0;i<allDesktops.length;i++){print(allDesktops[i].screen + " ")}'}.split.select{|x|x.to_i>=0}
+    kde_screens = %x{qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'desktops().map(d => print(d.screen + " "))'}.split.select{|x|x.to_i>=0}
     # guess that this list matches the order listed by xrandr
     monitors = %x{xrandr --listmonitors|grep -v Monitors}.split("\n").map{|x| x.split(" ")[3]}
 
